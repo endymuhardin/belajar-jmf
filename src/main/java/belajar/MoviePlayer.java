@@ -107,9 +107,8 @@ public class MoviePlayer extends javax.swing.JFrame {
         int hasil = fc.showOpenDialog(this);
         if(hasil == JFileChooser.APPROVE_OPTION) {
             File film = fc.getSelectedFile();
-            txtFile.setText(film.getAbsolutePath());
-            
             openFile(film);
+            txtFile.setText(film.getAbsolutePath());
         }
     }//GEN-LAST:event_btnOpenActionPerformed
 
@@ -118,7 +117,7 @@ public class MoviePlayer extends javax.swing.JFrame {
         Player mediaPlayer = null;
         try {
             mediafile = new MediaLocator(f.toURI().toURL());
-            
+            Manager.setHint( Manager.LIGHTWEIGHT_RENDERER, true );
             mediaPlayer = Manager.createRealizedPlayer(mediafile);
             
             // tampilan video
@@ -140,8 +139,12 @@ public class MoviePlayer extends javax.swing.JFrame {
             panel.add(controller, BorderLayout.SOUTH);
             
             this.getContentPane().add(panel, BorderLayout.CENTER);
-            this.repaint();
             mediaPlayer.start();
+            
+            // workaround supaya tampilannya refresh
+            this.setVisible(false);
+            this.setVisible(true);
+            
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, 
