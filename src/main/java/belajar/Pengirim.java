@@ -23,9 +23,11 @@ public class Pengirim {
     public static void main(String[] args) throws Exception {
         MediaLocator sumber 
                 = new MediaLocator(
-                new File("/home/endy/tmp/dancing-queen.mp3").toURI().toURL());
+                new File("/home/endy/tmp/dancing-queen.mp3")
+                .toURI().toURL());
         
-        MediaLocator tujuan = new MediaLocator("rtp://192.168.1.255:12345/audio");
+        MediaLocator tujuan 
+                = new MediaLocator("rtp://192.168.1.255:1234/audio");
         
         Format[] format = new Format[]{new AudioFormat(
                 AudioFormat.MPEG_RTP)};
@@ -37,7 +39,8 @@ public class Pengirim {
                 .createRealizedProcessor(
                 new ProcessorModel(ds, format, cd));
         
-        DataSink sink = Manager.createDataSink(proc.getDataOutput(), tujuan);
+        DataSink sink = Manager
+                .createDataSink(proc.getDataOutput(), tujuan);
         
         // kirim data
         proc.start();
