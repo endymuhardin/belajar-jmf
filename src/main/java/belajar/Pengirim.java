@@ -27,7 +27,7 @@ public class Pengirim {
                 .toURI().toURL());
         
         MediaLocator tujuan 
-                = new MediaLocator("rtp://192.168.1.255:1234/audio");
+                = new MediaLocator("rtp://192.168.1.102:1234/audio");
         
         Format[] format = new Format[]{new AudioFormat(
                 AudioFormat.MPEG_RTP)};
