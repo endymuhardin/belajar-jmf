@@ -13,10 +13,14 @@ public class App {
     public static void main( String[] args ) throws Exception {
         System.out.println( "Hello World!" );
         
-        File audiofile = new File("/home/endy/tmp/dancing-queen.mp3");
+        MediaLocator audiofile = new MediaLocator(
+                new File("/home/endy/tmp/dancing-queen.mp3")
+                .toURI().toURL());
         
-        Player audioPlayer = Manager.createRealizedPlayer(
-                new MediaLocator(audiofile.toURI().toURL()));
+        MediaLocator streaming = new MediaLocator("rtp://192.168.1.255:12345/audio");
+        
+        Player audioPlayer = Manager
+                .createRealizedPlayer(streaming);
         
         audioPlayer.start();
     }
