@@ -19,7 +19,7 @@ import javax.media.protocol.DataSource;
  *
  * @author endy
  */
-public class Pengirim {
+public class PengirimAudio {
     public static void main(String[] args) throws Exception {
         MediaLocator sumber 
                 = new MediaLocator(
