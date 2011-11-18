@@ -7,13 +7,17 @@ package belajar;
 import java.util.Vector;
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
+import javax.media.ControllerEvent;
+import javax.media.ControllerListener;
 import javax.media.DataSink;
 import javax.media.Format;
 import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.media.Player;
+import javax.media.PlugInManager;
 import javax.media.Processor;
 import javax.media.ProcessorModel;
+import javax.media.RealizeCompleteEvent;
 import javax.media.format.AudioFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
@@ -29,13 +33,13 @@ public class VoiceChat {
     private static Player player;
     
     public static void main(String[] args) throws Exception {
+        
         String ipTujuan = "192.168.58.39";
         String ipAsal = "192.168.58.35";
         String portTujuan = "1234";
         String portAsal = "1112";
         startTransmit(ipTujuan, portTujuan);
         startReceive(ipAsal, portAsal);
-        
         
         System.in.read();
         
@@ -76,15 +80,35 @@ public class VoiceChat {
         
         System.out.println("Pengirim sudah berjalan");
     }
-
+    
     private static void startReceive(String ip, String port) throws Exception {
         System.out.println("Menjalankan penerima di rtp://"+ip+":"+port+"/audio");
         MediaLocator source = new MediaLocator("rtp://"+ip+":"+port+"/audio");
-        player = Manager.createPlayer(source);
-        System.out.println("Inisialisasi penerima");
-        player.realize();
-        player.start();
-        System.out.println("Penerima sudah berjalan");
+        
+        final Player p = Manager.createPlayer(source);
+
+        System.out.println("State Unrealized : " + Player.Unrealized);
+        System.out.println("State Realizing : " + Player.Realizing);
+        System.out.println("State Realized : " + Player.Realized);
+        System.out.println("State Prefetching : " + Player.Prefetching);
+        System.out.println("State Prefetched : " + Player.Prefetched);
+
+        System.out.println("Menginstankan player : " + p.getClass().getName());
+        System.out.println("Player state : " + p.getState());
+        p.addControllerListener(new ControllerListener() {
+
+            public void controllerUpdate(ControllerEvent ce) {
+                System.out.println("Event : " + ce.getClass().getName());
+                System.out.println("Source : " + ce.getSource().getClass().getName());
+                System.out.println("State : " + p.getState());
+
+                if (RealizeCompleteEvent.class.isAssignableFrom(ce.getClass())) {
+                    System.out.println("Player siap, mari kita jalankan");
+                    p.start();
+                }
+            }
+        });
+        p.realize();
     }
     
     private static void stop() throws Exception {
