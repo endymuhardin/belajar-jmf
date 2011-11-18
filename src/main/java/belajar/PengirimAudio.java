@@ -27,7 +27,7 @@ public class PengirimAudio {
                 .toURI().toURL());
         
         MediaLocator tujuan 
-                = new MediaLocator("rtp://127.0.1.1:3000/audio/1");
+                = new MediaLocator("rtp://10.42.43.1:12340/audio/1");
         
         Format[] format = new Format[]{new AudioFormat(
                 AudioFormat.MPEG_RTP)};
