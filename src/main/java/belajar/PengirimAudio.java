@@ -23,11 +23,11 @@ public class PengirimAudio {
     public static void main(String[] args) throws Exception {
         MediaLocator sumber 
                 = new MediaLocator(
-                new File("/home/endy/tmp/dancing-queen.mp3")
+                new File("/home/endy/tmp/Celebrate.mp3")
                 .toURI().toURL());
         
         MediaLocator tujuan 
-                = new MediaLocator("rtp://192.168.1.102:1234/audio");
+                = new MediaLocator("rtp://192.168.1.101:12340/audio");
         
         Format[] format = new Format[]{new AudioFormat(
                 AudioFormat.MPEG_RTP)};

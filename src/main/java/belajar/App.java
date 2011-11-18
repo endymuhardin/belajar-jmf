@@ -18,7 +18,7 @@ public class App {
                 .toURI().toURL());
         
         MediaLocator streaming 
-                = new MediaLocator("rtp://192.168.1.255:12345/audio");
+                = new MediaLocator("rtp://192.168.1.101:12340/audio");
         
         Player audioPlayer = Manager
                 .createRealizedPlayer(streaming);
