@@ -9,9 +9,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;
+import javax.media.Format;
 import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.media.Player;
+import javax.media.PlugInManager;
 import javax.media.RealizeCompleteEvent;
 import javax.media.format.AudioFormat;
 import javax.media.rtp.RTPManager;
@@ -34,11 +36,20 @@ public class PenerimaAudio {
         //String url = "file:///home/endy/tmp/dancing-queen.mp3";
         menggunakanControllerListener(url);
         //menggunakanRtpManager();
-        
+
         System.in.read();
     }
 
     private static void menggunakanControllerListener(String url) throws Exception {
+        Format input1 = new AudioFormat(AudioFormat.MPEGLAYER3);
+        Format input2 = new AudioFormat(AudioFormat.MPEG);
+        Format output = new AudioFormat(AudioFormat.LINEAR);
+        PlugInManager.addPlugIn(
+                "com.sun.media.codec.audio.mp3.JavaDecoder",
+                new Format[]{input1, input2},
+                new Format[]{output},
+                PlugInManager.CODEC);
+
         MediaLocator m = new MediaLocator(url);
         final Player p = Manager.createPlayer(m);
 
@@ -87,7 +98,7 @@ public class PenerimaAudio {
                     System.out.println("Source : " + ce.getSource().getClass().getName());
                 }
             });
-            
+
             manager.addRemoteListener(new RemoteListener() {
 
                 public void update(RemoteEvent ce) {
@@ -96,14 +107,14 @@ public class PenerimaAudio {
                     System.out.println("Source : " + ce.getSource().getClass().getName());
                 }
             });
-            
+
             manager.addFormat(new AudioFormat(AudioFormat.MPEGLAYER3), 0);
-            
+
             SessionAddress srclocalAddr = new SessionAddress(InetAddress.getByName(InetAddress.getLocalHost().getHostName()), 3000);
             manager.initialize(srclocalAddr);
-            
-            System.out.println("RTP Manager ada di "+srclocalAddr.toString());
-            
+
+            System.out.println("RTP Manager ada di " + srclocalAddr.toString());
+
         } catch (Exception ex) {
             Logger.getLogger(PenerimaAudio.class.getName()).log(Level.SEVERE, null, ex);
         }
