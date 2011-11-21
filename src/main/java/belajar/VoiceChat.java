@@ -34,9 +34,9 @@ public class VoiceChat {
     
     public static void main(String[] args) throws Exception {
         
-        String ipTujuan = "192.168.58.39";
-        String ipAsal = "192.168.58.35";
+        String ipTujuan = "192.168.58.36";
         String portTujuan = "1234";
+        String ipAsal = "192.168.58.35";
         String portAsal = "1112";
         startTransmit(ipTujuan, portTujuan);
         startReceive(ipAsal, portAsal);
@@ -68,7 +68,7 @@ public class VoiceChat {
 
         
         // Tujuan
-        MediaLocator destfile = new MediaLocator("rtp://"+ipTujuan+":"+port+"/audio");
+        MediaLocator destfile = new MediaLocator("rtp://"+ipTujuan+":"+port+"/audio/1");
         
         // output sink
         output = Manager.createDataSink(ds, destfile);
@@ -82,8 +82,8 @@ public class VoiceChat {
     }
     
     private static void startReceive(String ip, String port) throws Exception {
-        System.out.println("Menjalankan penerima di rtp://"+ip+":"+port+"/audio");
-        MediaLocator source = new MediaLocator("rtp://"+ip+":"+port+"/audio");
+        System.out.println("Menjalankan penerima di rtp://"+ip+":"+port+"/audio/1");
+        MediaLocator source = new MediaLocator("rtp://"+ip+":"+port+"/audio/1");
         
         final Player p = Manager.createPlayer(source);
 
