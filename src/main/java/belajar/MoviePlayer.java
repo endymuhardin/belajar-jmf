@@ -13,9 +13,12 @@ package belajar;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.File;
+import javax.media.ControllerEvent;
+import javax.media.ControllerListener;
 import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.media.Player;
+import javax.media.RealizeCompleteEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -192,35 +195,49 @@ public class MoviePlayer extends javax.swing.JFrame {
     
     private void openStream(String url){
         MediaLocator mediafile = null;
-        Player mediaPlayer = null;
         try {
             mediafile = new MediaLocator(url);
             Manager.setHint( Manager.LIGHTWEIGHT_RENDERER, true );
-            mediaPlayer = Manager.createRealizedPlayer(mediafile);
-            // tampilan video
-            this.getContentPane().remove(pnlTengah);
+            final Player mediaPlayer = Manager.createPlayer(mediafile);
             
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
+            mediaPlayer.addControllerListener(new ControllerListener() {
+
+                public void controllerUpdate(ControllerEvent ce) {
+                    System.out.println("Controller Update "+ce.getClass().getName());
+                    
+                    if(ce instanceof RealizeCompleteEvent) {
+                        
+                        // tampilan video
+                        MoviePlayer.this.getContentPane().remove(pnlTengah);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BorderLayout());
+
+
+                        Component viscomp = mediaPlayer.getVisualComponent();
+                        if(viscomp != null){
+                            panel.add(viscomp, BorderLayout.CENTER);
+                        } else {
+                            JLabel lbl = new JLabel("Tidak ada gambarnya");
+                            panel.add(lbl, BorderLayout.CENTER);
+                        }
+                        // tombol play, pause, dsb
+                        Component controller = mediaPlayer.getControlPanelComponent();
+                        panel.add(controller, BorderLayout.SOUTH);
+
+                        MoviePlayer.this.getContentPane().add(panel, BorderLayout.CENTER);
+                        
+                        // workaround supaya tampilannya refresh
+                        MoviePlayer.this.setVisible(false);
+                        MoviePlayer.this.setVisible(true);
+                    }
+                }
+            });
             
             
-            Component viscomp = mediaPlayer.getVisualComponent();
-            if(viscomp != null){
-                panel.add(viscomp, BorderLayout.CENTER);
-            } else {
-                JLabel lbl = new JLabel("Tidak ada gambarnya");
-                panel.add(lbl, BorderLayout.CENTER);
-            }
-            // tombol play, pause, dsb
-            Component controller = mediaPlayer.getControlPanelComponent();
-            panel.add(controller, BorderLayout.SOUTH);
-            
-            this.getContentPane().add(panel, BorderLayout.CENTER);
             mediaPlayer.start();
             
-            // workaround supaya tampilannya refresh
-            this.setVisible(false);
-            this.setVisible(true);
+            
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -229,9 +246,7 @@ public class MoviePlayer extends javax.swing.JFrame {
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             
-            if(mediaPlayer != null){
-                mediaPlayer.close();
-            }
+            
         }
     }
     
