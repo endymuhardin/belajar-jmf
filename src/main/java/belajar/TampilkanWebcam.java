@@ -12,13 +12,15 @@ package belajar;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.io.IOException;
+import java.awt.Dimension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.Format;
 import javax.media.Manager;
 import javax.media.MediaLocator;
-import javax.media.NoDataSourceException;
 import javax.media.Player;
+import javax.media.control.FormatControl;
+import javax.media.format.YUVFormat;
 import javax.media.protocol.DataSource;
 import javax.swing.JOptionPane;
 
@@ -92,31 +94,62 @@ public class TampilkanWebcam extends javax.swing.JFrame {
     private void btnCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCaptureActionPerformed
         try {
             MediaLocator webcam = new MediaLocator(txtWebcam.getText());
-            System.out.println("Membuat media locator "+txtWebcam.getText());
+            System.out.println("Membuat media locator " + txtWebcam.getText());
             DataSource ds = Manager.createDataSource(webcam);
             System.out.println("Membuat datasource");
             Player p = Manager.createRealizedPlayer(ds);
             System.out.println("Player siap");
             Component screen = p.getVisualComponent();
-            if(screen == null){
-                JOptionPane.showMessageDialog(this, "Visual Component tidak ada", 
+            if (screen == null) {
+                JOptionPane.showMessageDialog(this, "Visual Component tidak ada",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             this.getContentPane().add(screen, BorderLayout.CENTER);
             this.getContentPane().add(p.getControlPanelComponent(), BorderLayout.SOUTH);
+
+            resizeJadiKecil(p);
+
+
             p.start();
-            
+
             // refresh frame
             this.setVisible(false);
             this.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(TampilkanWebcam.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, ex.getMessage(), 
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-        } 
+        }
     }//GEN-LAST:event_btnCaptureActionPerformed
+
+    private void resizeJadiKecil(Player p) {
+        FormatControl fc = (FormatControl) p.getControl("javax.media.control.FormatControl");
+        
+        // format yang sedang aktif
+        System.out.println("Format aktif tadinya : "+fc.getFormat());
+        
+        // format yang didukung
+        Format[] supported = fc.getSupportedFormats();
+
+        Dimension size = new Dimension(160, 120);
+
+        for (Format f : supported) {
+            System.out.println("Format : " + f.getClass().getName());
+            if (YUVFormat.class.isAssignableFrom(f.getClass())) {
+                YUVFormat yuf = (YUVFormat) f;
+                System.out.println(yuf.getSize());
+
+                if (size.equals(yuf.getSize())) {
+                    fc.setFormat(f);
+                }
+            }
+
+        }
+        
+        System.out.println("Format aktif sekarang : "+fc.getFormat());
+    }
 
     /**
      * @param args the command line arguments
