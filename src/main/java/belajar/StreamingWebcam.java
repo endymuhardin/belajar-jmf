@@ -21,6 +21,7 @@ import javax.media.MediaLocator;
 import javax.media.Player;
 import javax.media.Processor;
 import javax.media.ProcessorModel;
+import javax.media.control.TrackControl;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
@@ -35,10 +36,10 @@ public class StreamingWebcam extends javax.swing.JFrame {
 
     private DataSource dsDisplay;
     private DataSource dsStream;
-    
+
     /** Creates new form KirimWebcam */
     public StreamingWebcam() {
-        initComponents(); 
+        initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -137,28 +138,40 @@ public class StreamingWebcam extends javax.swing.JFrame {
         try {
             String ip = txtIp.getText();
             String port = txtPort.getText();
-            String tujuan = "rtp://"+ip+":"+port+"/video";
-            System.out.println("Tujuan streaming : "+tujuan);
+            String tujuan = "rtp://" + ip + ":" + port + "/video";
+            System.out.println("Tujuan streaming : " + tujuan);
 
             VideoFormat inputFormat = new VideoFormat(VideoFormat.YUV);
             ContentDescriptor outputFormat = new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
             MediaLocator mlTujuan = new MediaLocator(tujuan);
             Processor proc = Manager.createRealizedProcessor(
-                    new ProcessorModel(dsStream, 
-                    new Format[]{inputFormat}, 
+                    new ProcessorModel(dsStream,
+                    new Format[]{inputFormat},
                     outputFormat));
+
+            int x = 0;
+            for (TrackControl t : proc.getTrackControls()) {
+                x++;
+                System.out.println("Track " + x);
+                Format f = t.getFormat();
+                System.out.println("Format : " + f.getClass().getName());
+                System.out.println("Enabled : " + t.isEnabled());
+                System.out.println("Encoding : " + f.getEncoding());
+            }
+
+
             DataSink sinkTujuan = Manager.createDataSink(proc.getDataOutput(), mlTujuan);
-            
+
             sinkTujuan.open();
             sinkTujuan.start();
             proc.start();
-            
-        } catch (Exception err){
+
+        } catch (Exception err) {
             err.printStackTrace();
-            JOptionPane.showMessageDialog(this, 
-                    err.getMessage(), 
-                    "Error", 
+            JOptionPane.showMessageDialog(this,
+                    err.getMessage(),
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnStreamActionPerformed
@@ -166,39 +179,39 @@ public class StreamingWebcam extends javax.swing.JFrame {
     private void btnCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCaptureActionPerformed
         try {
             MediaLocator webcam = new MediaLocator(txtWebcam.getText());
-            System.out.println("Membuat media locator "+txtWebcam.getText());
-            
+            System.out.println("Membuat media locator " + txtWebcam.getText());
+
             System.out.println("Membuat datasource yang asli");
             DataSource dsCloneable = Manager.createDataSource(webcam);
-            
+
             System.out.println("Membuat cloneable datasource untuk ditampilkan");
             dsDisplay = Manager.createCloneableDataSource(dsCloneable);
-            
+
             System.out.println("Membuat datasource untuk streaming, clone dari dsDisplay");
-            dsStream = ((SourceCloneable)dsDisplay).createClone();
-            
+            dsStream = ((SourceCloneable) dsDisplay).createClone();
+
             System.out.println("Menyiapkan player");
             Player p = Manager.createRealizedPlayer(dsDisplay);
             System.out.println("Player siap");
             Component screen = p.getVisualComponent();
-            if(screen == null){
-                JOptionPane.showMessageDialog(this, "Visual Component tidak ada", 
+            if (screen == null) {
+                JOptionPane.showMessageDialog(this, "Visual Component tidak ada",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             this.getContentPane().add(screen, BorderLayout.CENTER);
             this.getContentPane().add(p.getControlPanelComponent(), BorderLayout.SOUTH);
             p.start();
-            
+
             // refresh frame
             this.setVisible(false);
             this.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(TampilkanWebcam.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, ex.getMessage(), 
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-        } 
+        }
     }//GEN-LAST:event_btnCaptureActionPerformed
 
     /**
