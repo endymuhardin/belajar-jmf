@@ -156,6 +156,8 @@ public class StreamingWebcamAudio extends javax.swing.JFrame {
             VideoFormat inputFormat = new VideoFormat(VideoFormat.YUV);
             ContentDescriptor outputFormat = new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
+            createStreamingDataSource();
+            
             MediaLocator mlTujuan = new MediaLocator(tujuan);
             Processor proc = Manager.createRealizedProcessor(
                     new ProcessorModel(dsStreamVideoAudio,
